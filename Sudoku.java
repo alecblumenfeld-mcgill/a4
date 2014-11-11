@@ -1,5 +1,6 @@
 import java.util.*;
 import java.io.*;
+import java.util.Random;
 
 
 class Sudoku
@@ -15,11 +16,54 @@ class Sudoku
 
     /* The solve() method should remove all the unknown characters ('x') in the Grid
      * and replace them with the numbers from 1-9 that satisfy the Sudoku puzzle. */
+    public int evaluate(){
+        int score =0;
+        for (int x =0 ; x<N ; x++) {
+            for (int y =0; y<N ;y++ ) {
+            if (Grid[x][y]==0) {
+                Grid[x][y]= (int)( Math.random()+1);
+                } 
+            }
+        }
+        return score;
+    }
     public void solve()
     {
-        for (int x =0 ; x<9 ; x++) {
-            System.out.println(Grid[0][x]);
-            
+        
+       
+        Random randomGenerator = new Random();
+        for (int x =0 ; x<N ; x++) {
+            for (int y =0; y<N ;y++ ) {
+            if (Grid[x][y]==0) {
+                Grid[x][y]= (int)( Math.random()+1);
+                } 
+            }
+        }
+        boolean flag =true;
+
+        while(flag==true){
+            flag =false;
+            for(int i = 0; i<N-1;i++){
+                for(int j = 0; j<N-1;j++){
+                    i= (int)( Math.random()+1);
+                    j= (int)( Math.random()+1);
+                        for(int k = 1; k<N;k++){
+                            int lastScore = this.evaluate();
+                            int temp = Grid[i][j];
+                            Grid[i][j] =k;
+                            int nextscore = this.evaluate();
+                            if (lastScore >nextscore) {
+                                  Grid[i][j]=temp ;
+                             } 
+                             else{
+                                flag =true;
+                                System.out.println("test");
+                             }
+
+                        }
+
+                }
+            }
         }
     }
 
