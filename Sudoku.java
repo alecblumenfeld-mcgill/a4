@@ -43,20 +43,24 @@ class Sudoku
     int rowScore =0;
     for (int row =0; row<N  ; row++ ) {
             for (int col=0; col<N  ;col ++ ) {
-                rowList[row] = Grid[row][col];
+                rowList[col] = Grid[row][col];
             }
             rowScore = rowScore + CheckDup(rowList);
         }
     return rowScore;    
     }
+    /// this is broken fix please
     public int checkCol(){
     int[] colList =new int[N];
     int colScore =0;
-    for (int col =0; col<N  ; col++ ) {
-            for (int row=0; row<N  ;row ++ ) {
+    for (int row =0; row<N  ; row++ ) {
+            for (int col=0; col<N  ;col ++ ) {
+                System.out.println(Grid[col][row]);
                 colList[col] = Grid[col][row];
             }
             colScore = colScore + CheckDup(colList);
+            System.out.println(Arrays.toString(colList));
+
         }
     return colScore;    
     }
