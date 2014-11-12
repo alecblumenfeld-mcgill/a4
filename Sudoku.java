@@ -34,7 +34,7 @@ class Sudoku
      
 
         for (int j = 0; j < 9; j ++) {
-            square[j] = Grid[(i / 3) * 3 + j / 3][i * 3 % 9 + j % 3];
+            square[j] = Grid[(i / SIZE) * SIZE + j / SIZE][i * SIZE % N + j % SIZE];
         }
     }
         return 0;
