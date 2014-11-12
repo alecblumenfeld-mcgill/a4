@@ -55,7 +55,6 @@ class Sudoku
         }
     return rowScore;    
     }
-    /// this is broken fix please
     public int checkCol(){
     int[] colList =new int[N];
     int colScore =0;
@@ -81,39 +80,32 @@ class Sudoku
     public void solve()
     {
         
-       
-        Random randomGenerator = new Random();
-        for (int x =0 ; x<N ; x++) {
-            for (int y =0; y<N ;y++ ) {
-            if (Grid[x][y]==0) {
-                Grid[x][y]= (int)( Math.random()+1);
-                } 
-            }
-        }
         boolean flag =true;
 
         while(flag==true){
             flag =false;
-            for(int i = 0; i<N-1;i++){
-                for(int j = 0; j<N-1;j++){
-                    i= (int)( Math.random()+1);
-                    j= (int)( Math.random()+1);
-                        for(int k = 1; k<N;k++){
+            for(int i = 0; i<N;i++){
+                for(int j = 0; j<N;j++){
+                  if(Grid[i][j] == 0){
+                       Grid[i][j] = (int)(Math.random()*8 )+1;
+
+                        for(int k = 1; k<N+1;k++){
                             int lastScore = this.evaluate();
                             int temp = Grid[i][j];
                             Grid[i][j] =k;
                             int nextscore = this.evaluate();
-                            if (lastScore >nextscore) {
+                            if (lastScore <nextscore) {
                                   Grid[i][j]=temp ;
+                                 
+                                  
                              } 
                              else{
                                 flag =true;
-                                System.out.println("test");
                              }
 
                         }
 
-                }
+                }}
             }
         }
     }
@@ -272,8 +264,12 @@ class Sudoku
         // necessary.
         //s.solve();
         System.out.println("CHECK ORGINAL:" + s.evaluate());
+        s.solve();
         // Print out the (hopefully completed!) puzzle
         s.print();
+        System.out.println("CHECK POST:" + s.evaluate());
+
+       
     }
 }
 
