@@ -26,18 +26,20 @@ class Sudoku
     }
 
    /** Checks if num is an acceptable value for the box around row and col */
-   // public int checkBox( int row, int col, int num )
-   // {
-   //    row = (row / 3) * 3 ;
-   //    col = (col / 3) * 3 ;
+   public int checkBox(  )
+   {
+    for (int i = 0; i < 9; i++) {
 
-   //    for( int r = 0; r < 3; r++ )
-   //       for( int c = 0; c < 3; c++ )
-   //       if( model[row+r][col+c] == num )
-   //          return false ;
+        int[] square = new int[9];
+     
 
-   //    return true ;
-   // }
+        for (int j = 0; j < 9; j ++) {
+            square[j] = Grid[(i / 3) * 3 + j / 3][i * 3 % 9 + j % 3];
+        }
+    }
+        return 0;
+
+   }
    public int checkRow(){
     int[] rowList =new int[N];
 
@@ -73,7 +75,7 @@ class Sudoku
      * and replace them with the numbers from 1-9 that satisfy the Sudoku puzzle. */
     public int evaluate(){
         int score =0;
-        score = this.checkCol() +this.checkRow();
+        score = this.checkCol() +this.checkRow() +this.checkBox();
         return score;
     }
     public void solve()
