@@ -1,7 +1,7 @@
 import java.util.*;
 import java.io.*;
 import java.util.Random;
-
+import java.util.Arrays;
 
 class Sudoku
 {
@@ -12,19 +12,60 @@ class Sudoku
     /* The grid contains all the numbers in the Sudoku puzzle.  Numbers which have
      * not yet been revealed are stored as 0. */
     int Grid[][];
+ /** Checks if num is an acceptable value for the given row */
+   public int CheckDup(int[] list){
+    Arrays.sort(list);
+    int count =0;
 
+        for(int i = 1; i < list.length; i++) {
+            if(list[i] == list[i - 1]) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+   /** Checks if num is an acceptable value for the box around row and col */
+   // public int checkBox( int row, int col, int num )
+   // {
+   //    row = (row / 3) * 3 ;
+   //    col = (col / 3) * 3 ;
+
+   //    for( int r = 0; r < 3; r++ )
+   //       for( int c = 0; c < 3; c++ )
+   //       if( model[row+r][col+c] == num )
+   //          return false ;
+
+   //    return true ;
+   // }
+   public int checkRow(){
+    int[] rowList =new int[N];
+    int rowScore =0;
+    for (int row =0; row<N  ; row++ ) {
+            for (int col=0; col<N  ;col ++ ) {
+                rowList[row] = Grid[row][col];
+            }
+            rowScore = rowScore + CheckDup(rowList);
+        }
+    return rowScore;    
+    }
+    public int checkCol(){
+    int[] colList =new int[N];
+    int colScore =0;
+    for (int col =0; col<N  ; col++ ) {
+            for (int row=0; row<N  ;row ++ ) {
+                colList[col] = Grid[col][row];
+            }
+            colScore = colScore + CheckDup(colList);
+        }
+    return colScore;    
+    }
 
     /* The solve() method should remove all the unknown characters ('x') in the Grid
      * and replace them with the numbers from 1-9 that satisfy the Sudoku puzzle. */
     public int evaluate(){
         int score =0;
-        for (int x =0 ; x<N ; x++) {
-            for (int y =0; y<N ;y++ ) {
-            if (Grid[x][y]==0) {
-                Grid[x][y]= (int)( Math.random()+1);
-                } 
-            }
-        }
+        score = this.checkCol() +this.checkRow();
         return score;
     }
     public void solve()
@@ -219,8 +260,8 @@ class Sudoku
         // Solve the puzzle.  We don't currently check to verify that the puzzle can be
         // successfully completed.  You may add that check if you want to, but it is not
         // necessary.
-        s.solve();
-
+        //s.solve();
+        s.evaluate();
         // Print out the (hopefully completed!) puzzle
         s.print();
     }
