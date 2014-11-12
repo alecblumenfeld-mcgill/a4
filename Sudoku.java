@@ -18,7 +18,7 @@ class Sudoku
     int count =0;
 
         for(int i = 1; i < list.length; i++) {
-            if(list[i] == list[i - 1]) {
+            if(list[i] == list[i - 1] &&list[i] !=0) {
                 count++;
             }
         }
@@ -40,12 +40,16 @@ class Sudoku
    // }
    public int checkRow(){
     int[] rowList =new int[N];
+
     int rowScore =0;
     for (int row =0; row<N  ; row++ ) {
             for (int col=0; col<N  ;col ++ ) {
-                rowList[col] = Grid[row][col];
+                rowList[col] = Grid[col][row];
             }
+
             rowScore = rowScore + CheckDup(rowList);
+
+
         }
     return rowScore;    
     }
@@ -55,11 +59,11 @@ class Sudoku
     int colScore =0;
     for (int row =0; row<N  ; row++ ) {
             for (int col=0; col<N  ;col ++ ) {
-                System.out.println(Grid[col][row]);
-                colList[col] = Grid[col][row];
+                colList[col] = Grid[row][col];
+
             }
+
             colScore = colScore + CheckDup(colList);
-            System.out.println(Arrays.toString(colList));
 
         }
     return colScore;    
@@ -265,7 +269,7 @@ class Sudoku
         // successfully completed.  You may add that check if you want to, but it is not
         // necessary.
         //s.solve();
-        s.evaluate();
+        System.out.println("CHECK ORGINAL:" + s.evaluate());
         // Print out the (hopefully completed!) puzzle
         s.print();
     }
