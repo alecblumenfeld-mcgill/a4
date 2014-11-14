@@ -42,27 +42,27 @@ class Sudoku
     }
 
    /** Checks if num is an acceptable value for the box around row and col */
-   public int checkBox(  )
+   public int checkBox( int[][] cGrid )
    {
-    for (int i = 0; i < 9; i++) {
+    for (int i = 0; i < SIZE*SIZE; i++) {
 
-        int[] square = new int[9];
+        int[] square = new int[SIZE*SIZE];
      
 
-        for (int j = 0; j < 9; j ++) {
-            square[j] = Grid[(i / SIZE) * SIZE + j / SIZE][i * SIZE % N + j % SIZE];
+        for (int j = 0; j < SIZE*SIZE; j ++) {
+            square[j] = cGrid[(i / SIZE) * SIZE + j / SIZE][i * SIZE % N + j % SIZE];
         }
     }
         return 0;
 
    }
-   public int checkRow(){
+   public int checkRow(int[][] cGrid){
     int[] rowList =new int[N];
 
     int rowScore =0;
     for (int row =0; row<N  ; row++ ) {
             for (int col=0; col<N  ;col ++ ) {
-                rowList[col] = Grid[col][row];
+                rowList[col] = cGrid[col][row];
             }
 
             rowScore = rowScore + CheckDup(rowList);
@@ -71,12 +71,12 @@ class Sudoku
         }
     return rowScore;    
     }
-    public int checkCol(){
+    public int checkCol(int[][] cGrid){
     int[] colList =new int[N];
     int colScore =0;
     for (int row =0; row<N  ; row++ ) {
             for (int col=0; col<N  ;col ++ ) {
-                colList[col] = Grid[row][col];
+                colList[col] = cGrid[row][col];
 
             }
 
@@ -88,9 +88,9 @@ class Sudoku
 
     /* The solve() method should remove all the unknown characters ('x') in the Grid
      * and replace them with the numbers from 1-9 that satisfy the Sudoku puzzle. */
-    public int evaluate(){
+    public int evaluate(int[][] cGrid){
         int score =0;
-        score = this.checkCol() +this.checkRow() +this.checkBox();
+        score = checkCol(cGrid) + checkRow(cGrid) +checkBox(cGrid);
         return score;
     }
     public void solve()
@@ -105,7 +105,7 @@ class Sudoku
                         for(int poscheck = 1; poscheck <10; poscheck++){
                             
                             Grid[i][j] = poscheck;
-                            if (this.evaluate() == 0) {
+                            if (evaluate(Grid) == 0) {
                                 Point p = new Point(i,j,poslist);
 
                                 poslist.add(poscheck);
@@ -154,15 +154,16 @@ class Sudoku
                         // }
                                     List<Integer> posssiblePoint = zerolist.get(randpoint).posssible;
                                     for(int k = 0; k<posssiblePoint.size();k++){
-                                    int lastScore = this.evaluate();
+                                    int lastScore = evaluate(CURRENTGRID);
                                     int temp = CURRENTGRID[zerolist.get(randpoint).x][zerolist.get(randpoint).y];
                                     CURRENTGRID[zerolist.get(randpoint).x][zerolist.get(randpoint).y] = posssiblePoint.get(k);
-                                    int nextscore = this.evaluate();
+                                    int nextscore = evaluate(CURRENTGRID);
                                     if (lastScore <nextscore) {
                                           CURRENTGRID[zerolist.get(randpoint).x][zerolist.get(randpoint).y]=temp ;
+                                          System.out.println(evaluate(CURRENTGRID));
                                           count++;
                                           threshold = threshold - (1*coolingrate);
-                                          if (this.evaluate()==0) {
+                                          if (evaluate(CURRENTGRID)==0) {
                                               Grid = CURRENTGRID;
                                               break;
                                           }
@@ -170,14 +171,16 @@ class Sudoku
                                           if (threshold >0.1) {
                                               CURRENTGRID = NEWGRID;
                                           }
+                                          System.out.println("COUNT :"+ count);
+                                           if (count >250) {
+                                            CURRENTGRID = ORGINALGRID;
+                                            count = 0;
+                                          }
                                           else {
                                               flag =true;
                                           }
 
-                                           if (count >150) {
-                                            CURRENTGRID = ORGINALGRID;
-                                            count = 0;
-                                          }
+                                          
                                           break;
                                      } 
                                 }
@@ -186,7 +189,6 @@ class Sudoku
                         
                 }
          }
-         Grid = CURRENTGRID;
          
     }
 
@@ -338,17 +340,15 @@ class Sudoku
 
         // read the rest of the Sudoku puzzle
         s.read( in );
-        s.print();
 
         // Solve the puzzle.  We don't currently check to verify that the puzzle can be
         // successfully completed.  You may add that check if you want to, but it is not
         // necessary.
         //s.solve();
-        System.out.println("CHECK ORGINAL:" + s.evaluate());
         s.solve();
         // Print out the (hopefully completed!) puzzle
         s.print();
-        System.out.println("CHECK POST:" + s.evaluate());
+       
 
        
     }
