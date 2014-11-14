@@ -44,16 +44,19 @@ class Sudoku
    /** Checks if num is an acceptable value for the box around row and col */
    public int checkBox( int[][] cGrid )
    {
+    int boxScore =0;
     for (int i = 0; i < SIZE*SIZE; i++) {
-
+        
         int[] square = new int[SIZE*SIZE];
      
 
         for (int j = 0; j < SIZE*SIZE; j ++) {
             square[j] = cGrid[(i / SIZE) * SIZE + j / SIZE][i * SIZE % N + j % SIZE];
         }
+        boxScore = boxScore+ CheckDup(square);
     }
-        return 0;
+
+        return boxScore;
 
    }
    public int checkRow(int[][] cGrid){
@@ -171,7 +174,6 @@ class Sudoku
                                           if (threshold >0.1) {
                                               CURRENTGRID = NEWGRID;
                                           }
-                                          System.out.println("COUNT :"+ count);
                                            if (count >250) {
                                             CURRENTGRID = ORGINALGRID;
                                             count = 0;
