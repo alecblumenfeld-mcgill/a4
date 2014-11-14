@@ -5,10 +5,16 @@ import java.util.Arrays;
 class Point{
     int x;
     int y;
-    public Point(int xx, int yy ){
+    List<Integer> posssible = new ArrayList<Integer>();
+    public Point(int xx, int yy, List<Integer> a ){
         x= xx;
         y = yy;
+        posssible = a;
     } 
+     public String toString() {
+        return "X: " + x + "  Y:" + y + "  posssible:"+ posssible;
+    }
+    
 }
 class Sudoku
 {
@@ -87,79 +93,95 @@ class Sudoku
     public void solve()
     {
     List<Point> zerolist = new ArrayList<Point>();
-        
+    
         boolean flag =true;
         for(int i = 0; i<N;i++){
                 for(int j = 0; j<N;j++){
                   if(Grid[i][j] == 0){
-                        Point p = new Point(i,j);
+                    List<Integer> poslist = new ArrayList<Integer>();
+                        for(int poscheck = 1; poscheck <10; poscheck++){
+                            
+                            Grid[i][j] = poscheck;
+                            if (this.evaluate() == 0) {
+                                Point p = new Point(i,j,poslist);
 
-                        zerolist.add(p);   
+                                poslist.add(poscheck);
+                                 zerolist.add(p); 
+                                }
+                        }
+                       
+
+                        Grid[i][j] = 0;
+                        
+
+                         
 
                   }
               }
           }
+          System.out.println(zerolist);
+
            
           
-        int ORGINALGRID[][] =Grid;
-        int CURRENTGRID[][] =Grid;
-        int NEWGRID[][] =Grid;
-        double threshold = 1.0;
-        double coolingrate = 0.003;
-        /// randomize 
-        fp
-        while(flag==true){
-            int count = 0;
-            flag =false;
-                    for (int x =0 ; x < zerolist.size() ;x++ ) {
-                        int randpoint =  (int)(Math.random()*zerolist.size());
-                        NEWGRID = CURRENTGRID;
-                        CURRENTGRID[zerolist.get(randpoint).x][zerolist.get(randpoint).y] = (int)(Math.random()*8 )+1;
-                        // for(int k = 1; k<N+1;k++){
-                        //     int lastScore = this.evaluate();
-                        //     int temp = Grid[zerolist.get(randpoint).x][zerolist.get(randpoint).y];
-                        //     Grid[zerolist.get(x)][zerolist.get(x+1)] =k;
-                        //     int nextscore = this.evaluate();
-                        //     if (lastScore >nextscore) {
-                        //           Grid[zerolist.get(x)][zerolist.get(x+1)]=temp ;
-                        //      } 
-                        //      else{
-                        //         flag =true;
-                        //      }
+        // int ORGINALGRID[][] =Grid;
+        // int CURRENTGRID[][] =Grid;
+        // int NEWGRID[][] =Grid;
+        // double threshold = 1.0;
+        // double coolingrate = 0.003;
+        // /// randomize 
+        
+        // while(flag==true){
+        //     int count = 0;
+        //     flag =false;
+        //             for (int x =0 ; x < zerolist.size() ;x++ ) {
+        //                 int randpoint =  (int)(Math.random()*zerolist.size());
+        //                 NEWGRID = CURRENTGRID;
+        //                 CURRENTGRID[zerolist.get(randpoint).x][zerolist.get(randpoint).y] = (int)(Math.random()*8 )+1;
+        //                 // for(int k = 1; k<N+1;k++){
+        //                 //     int lastScore = this.evaluate();
+        //                 //     int temp = Grid[zerolist.get(randpoint).x][zerolist.get(randpoint).y];
+        //                 //     Grid[zerolist.get(x)][zerolist.get(x+1)] =k;
+        //                 //     int nextscore = this.evaluate();
+        //                 //     if (lastScore >nextscore) {
+        //                 //           Grid[zerolist.get(x)][zerolist.get(x+1)]=temp ;
+        //                 //      } 
+        //                 //      else{
+        //                 //         flag =true;
+        //                 //      }
 
-                        // }
+        //                 // }
 
-                                    for(int k = 1; k<10;k++){
-                                    int lastScore = this.evaluate();
-                                    int temp = CURRENTGRID[zerolist.get(randpoint).x][zerolist.get(randpoint).y];
-                                    CURRENTGRID[zerolist.get(randpoint).x][zerolist.get(randpoint).y] =k;
-                                    int nextscore = this.evaluate();
-                                    System.out.println(lastScore + ">" + nextscore + "      K: "+k);
-                                    if (lastScore <nextscore) {
-                                          CURRENTGRID[zerolist.get(randpoint).x][zerolist.get(randpoint).y]=temp ;
-                                          count++;
-                                          threshold = threshold - (1*coolingrate);
-                                          System.out.println(threshold);
-                                          if (threshold >0.1) {
-                                              CURRENTGRID = NEWGRID;
-                                          }
-                                          else {
-                                              flag =true;
-                                          }
+        //                             for(int k = 1; k<10;k++){
+        //                             int lastScore = this.evaluate();
+        //                             int temp = CURRENTGRID[zerolist.get(randpoint).x][zerolist.get(randpoint).y];
+        //                             CURRENTGRID[zerolist.get(randpoint).x][zerolist.get(randpoint).y] =k;
+        //                             int nextscore = this.evaluate();
+        //                             System.out.println(lastScore + ">" + nextscore + "      K: "+k);
+        //                             if (lastScore <nextscore) {
+        //                                   CURRENTGRID[zerolist.get(randpoint).x][zerolist.get(randpoint).y]=temp ;
+        //                                   count++;
+        //                                   threshold = threshold - (1*coolingrate);
+        //                                   System.out.println(threshold);
+        //                                   if (threshold >0.1) {
+        //                                       CURRENTGRID = NEWGRID;
+        //                                   }
+        //                                   else {
+        //                                       flag =true;
+        //                                   }
 
-                                           if (count >150) {
-                                            CURRENTGRID = ORGINALGRID;
-                                            count = 0;
-                                          }
-                                          break;
-                                     } 
-                                }
+        //                                    if (count >150) {
+        //                                     CURRENTGRID = ORGINALGRID;
+        //                                     count = 0;
+        //                                   }
+        //                                   break;
+        //                              } 
+        //                         }
                             
                         
                         
-                }
-         }
-         Grid = CURRENTGRID;
+        //         }
+        //  }
+        //  Grid = CURRENTGRID;
     }
 
 
