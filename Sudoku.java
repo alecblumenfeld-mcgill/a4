@@ -122,8 +122,8 @@ class Sudoku
                   }
               }
           }
+                    //System.out.println(zerolist.get(1).posssible.get(zerolist.get(1).posssible.size()-1));
 
-           
           
         int ORGINALGRID[][] =Grid;
         int CURRENTGRID[][] =Grid;
@@ -135,7 +135,7 @@ class Sudoku
         while(flag==true){
             int count = 0;
             flag =false;
-                    for (int x =0 ; x < zerolist.size() ;x++ ) {
+                    for (int x =0 ; x < zerolist.size()*100 ;x++ ) {
                         int randpoint =  (int)(Math.random()*zerolist.size());
                         NEWGRID = CURRENTGRID;
                         CURRENTGRID[zerolist.get(randpoint).x][zerolist.get(randpoint).y] = (int)(Math.random()*8 )+1;
@@ -152,18 +152,21 @@ class Sudoku
                         //      }
 
                         // }
-                                    point tempPoint = zerolist[x];
-                                    for(int k = 1; k<tempPoint.posssible.size();k++){
+                                    List<Integer> posssiblePoint = zerolist.get(randpoint).posssible;
+                                    for(int k = 0; k<posssiblePoint.size();k++){
                                     int lastScore = this.evaluate();
                                     int temp = CURRENTGRID[zerolist.get(randpoint).x][zerolist.get(randpoint).y];
-                                    CURRENTGRID[zerolist.get(randpoint).x][zerolist.get(randpoint).y] =k;
+                                    CURRENTGRID[zerolist.get(randpoint).x][zerolist.get(randpoint).y] = posssiblePoint.get(k);
                                     int nextscore = this.evaluate();
-                                    System.out.println(lastScore + ">" + nextscore + "      K: "+k);
                                     if (lastScore <nextscore) {
                                           CURRENTGRID[zerolist.get(randpoint).x][zerolist.get(randpoint).y]=temp ;
                                           count++;
                                           threshold = threshold - (1*coolingrate);
-                                          System.out.println(threshold);
+                                          if (this.evaluate()==0) {
+                                              Grid = CURRENTGRID;
+                                              break;
+                                          }
+
                                           if (threshold >0.1) {
                                               CURRENTGRID = NEWGRID;
                                           }
@@ -184,6 +187,7 @@ class Sudoku
                 }
          }
          Grid = CURRENTGRID;
+         
     }
 
 
