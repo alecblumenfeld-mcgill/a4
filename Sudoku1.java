@@ -23,18 +23,20 @@ class Point{
 }
 
 class Change {
-    int x,y,old,changed;
-    public Change(int xx , int yy, int oldOne, int changedOne){
-        x=xx;
-        y=yy;
-        old=oldOne;
-        changed=changedOne;
+    int x1,y1,x2,y2,oneOld,twoOld;
+    public Change(Point p1 , Point p2, int uno, int dos){
+        x1=p1.x;
+        y1=p1.y;
+        x2=p2.x;
+        y2=p2.y;
+        oneOld=uno;
+        twoOld=dos;
     }
 }
 //HILL CLIMBING: heurstic implmentation. randomly fills in given vars with numbers that work for that given cord.
 //then changes a random cord for all of its possible vals and finds the lowest score, moves on and repeats
 // simulated aniealling is implementend so that only higher vlaue switches are made and random restarts incase it gets stuck.
-class Sudoku
+class Sudoku1
 {
     /* SIZE is the size parameter of the Sudoku puzzle, and N is the square of the size.  For 
      * a standard Sudoku puzzle, SIZE is 3 and N is 9. */
@@ -120,19 +122,27 @@ int[][] deepCopy(int[][] g){
 
     public int[][] populate(){
         /// randomize the given vars absed one possible values
+        int[] poss = new int[N];
+        for(int i =0;i<N;i++){
+            poss[i]=N;
+        }
+        for(int x=0;x<N;x++){
+            for(int y=0;y<N;y++){
+                if(Grid[x][y]!=0){
+                    poss[Grid[x][y]-1]--; //Number of possibilities of each number
+                }
+            }
+        }
         int[][] repoplated = deepCopy(Grid);         
         for(Point p: zerolist){
-            repoplated[p.x][p.y]=p.posssible.get((int)(Math.random()*p.posssible.size()));
+            int random = (int ) (Math.random() * N);
+            while(poss[random]==0){
+                // System.out.println(random);
+                random = (int ) (Math.random() * N);
+            }
+            repoplated[p.x][p.y]=random+1;
+            poss[random]--;
         }
-        // for(int i = 0; i<N;i++){
-        //         for(int j = 0; j<N;j++){
-        //         if (Grid[i][j]==0) {
-        //             List<Integer> posssiblePoint = zerolist.get(zerocounter).posssible;
-        //             Grid[i][j]= posssiblePoint.get((int)(Math.random()*posssiblePoint.size()));                   
-        //             zerocounter++;
-        //             }
-        //         }
-        //     }
      return repoplated;   
     }
 
@@ -147,68 +157,65 @@ int[][] deepCopy(int[][] g){
                   if(Grid[i][j] == 0){
                         List<Integer> poslist = new ArrayList<Integer>();
                         Point p = new Point(i,j,poslist);
-                        for(int poscheck = 1; poscheck <10; poscheck++){
-                            Grid[i][j] = poscheck;
-                            if (evaluate(Grid) == 0) {
-                            poslist.add(poscheck);
-                        }
-                            zerolist.add(p);
-                        }
-                        Grid[i][j] = 0;
+                        zerolist.add(p);
                     }
               }
           }
-                    //System.out.println(zerolist.get(1).posssible.get(zerolist.get(1).posssible.size()-1));
-
         //intilizing vars used by the solve loop
         int CURRENTGRID[][] =populate();
         double threshold = 1.0;
         double coolingrate = 0.02;
-        int lastScore = evaluate(CURRENTGRID);
-        if(lastScore == 0){
+        int oldScore = evaluate(CURRENTGRID);
+        if(oldScore == 0){
+            System.out.println("HERERE");
             Grid=CURRENTGRID;
             return;
          }
+
         int count = 0;
-        while(flag==true){
-            //count for random restart
-            
+        while(flag==true){            
             int randpoint = (int)(Math.random()*zerolist.size());
-            List<Integer> posssiblePoint = zerolist.get(randpoint).posssible;
-            Point p = zerolist.get(randpoint);
-            int changed = 
-            posssiblePoint.get((int)(Math.random()*posssiblePoint.size()));
-            Change change = new Change(p.x , p.y, CURRENTGRID[p.x][p.y], changed);
-            System.out.println("changing X:" +p.x +"  Y:"+ p.y);
-            //for(int k = 0; k<posssiblePoint.size();k++){
-            CURRENTGRID[change.x][change.y]=change.changed;
-            int nextscore = evaluate(CURRENTGRID);
-            if(nextscore ==0){
+            Point one = zerolist.get(randpoint);
+            int randtwo = (int)(Math.random()*zerolist.size());
+            Point two = zerolist.get(randtwo);
+            Change change = new Change(one,two, CURRENTGRID[one.x][one.y], CURRENTGRID[two.x][two.y]);
+            int temp = CURRENTGRID[change.x1][change.y1];
+            CURRENTGRID[change.x1][change.y1] = CURRENTGRID[change.x2][change.y2];
+             CURRENTGRID[change.x2][change.y2]= temp;
+            int newscore = evaluate(CURRENTGRID);
+            if(newscore ==0){
                 Grid= CURRENTGRID;
                 break;
             }
-            if (lastScore < nextscore) { //We made the board worse
+            if (oldScore < newscore) { //We made the board worse
+                System.out.println(newscore +"    "+ count+"  "+ oldScore);
                   count++;
-                  //threshold = threshold - (1*coolingrate);
-                  System.out.println("CURRENT SCORE: "+evaluate(CURRENTGRID)+" Count: "+count);
-                  if (evaluate(CURRENTGRID)==0) {
-                      Grid = CURRENTGRID;
-                      break;
-                  }
-                  if (count ==500) {
+                  // threshold = threshold - (1*coolingrate);
+
+                  if (count ==1000) {
+                    System.out.println("stuck in a minima");
                     CURRENTGRID =populate();
+                    oldScore=evaluate(CURRENTGRID);
                     threshold =1.0;
                     count = 0;
                   }  
-                  else if (!(threshold > Math.random())) {
-                    //System.out.println("READ");
-                      CURRENTGRID[change.x][change.y]=change.old; 
+                  if (true) { //Reject change, revert back
+                    // count = 0;
+
+                       temp = CURRENTGRID[change.x1][change.y1];
+                        CURRENTGRID[change.x1][change.y1] = CURRENTGRID[change.x2][change.y2];
+                     CURRENTGRID[change.x2][change.y2]= temp;
                   }     
                 }
-                else{ //we made the board better
-                    System.out.println("Better board");
-                    lastScore=nextscore;
+                else if (oldScore==newscore){ //we made the board better
+                    // System.out.println("Better board");
+                    count++;
+                    oldScore=newscore;
             }
+                else{
+                    count = 0;
+                    oldScore=newscore;
+                }
          }
          
     }
@@ -221,7 +228,7 @@ int[][] deepCopy(int[][] g){
     /* Default constructor.  This will initialize all positions to the default 0
      * value.  Use the read() function to load the Sudoku puzzle from a file or
      * the standard input. */
-    public Sudoku( int size )
+    public Sudoku1( int size )
     {
         SIZE = size;
         N = size*size;
@@ -357,7 +364,7 @@ int[][] deepCopy(int[][] g){
             System.exit(-1);
         }
 
-        Sudoku s = new Sudoku( puzzleSize );
+        Sudoku1 s = new Sudoku1( puzzleSize );
 
         // read the rest of the Sudoku puzzle
         s.read( in );
