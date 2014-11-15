@@ -2,6 +2,8 @@ import java.util.*;
 import java.io.*;
 import java.util.Random;
 import java.util.Arrays;
+//this class are used for unkown points that are given, keeps track of their cordiantes and also
+// the possible numbers that could be used in the given array
 class Point{
     int x;
     int y;
@@ -12,13 +14,16 @@ class Point{
         posssible = a;
     } 
      public String toString() {
-        return "X: " + x + "  Y:" + y + "  posssible:"+ posssible;
+        return "X: " + x + "  Y:" + y + "  posssible: "+ posssible;
     }
     public List<Integer> getPoint(){
         return this.posssible;     
     } 
     
 }
+//HILL CLIMBING: heurstic implmentation. randomly fills in given vars with numbers that work for that given cord.
+//then changes a random cord for all of its possible vals and finds the lowest score, moves on and repeats
+// simulated aniealling is implementend so that only higher vlaue switches are made and random restarts incase it gets stuck.
 class Sudoku
 {
     /* SIZE is the size parameter of the Sudoku puzzle, and N is the square of the size.  For 
@@ -29,6 +34,7 @@ class Sudoku
      * not yet been revealed are stored as 0. */
     int Grid[][];
  /** Checks if num is an acceptable value for the given row */
+ //takes an array and checks dupplicats
    public int CheckDup(int[] list){
     Arrays.sort(list);
     int count =0;
@@ -41,24 +47,20 @@ class Sudoku
         return count;
     }
 
-   /** Checks if num is an acceptable value for the box around row and col */
-   public int checkBox( int[][] cGrid )
-   {
+   // sends a all of the boxes from the puzzle to check dup and returns the sum of boxes 
+   public int checkBox( int[][] cGrid ){
     int boxScore =0;
-    for (int i = 0; i < SIZE*SIZE; i++) {
-        
+    for (int i = 0; i < SIZE*SIZE; i++) {    
         int[] square = new int[SIZE*SIZE];
-     
-
         for (int j = 0; j < SIZE*SIZE; j ++) {
             square[j] = cGrid[(i / SIZE) * SIZE + j / SIZE][i * SIZE % N + j % SIZE];
         }
         boxScore = boxScore+ CheckDup(square);
     }
-
         return boxScore;
-
    }
+     // sends a all of the rows from the puzzle to check dup and returns the sum of rows 
+
    public int checkRow(int[][] cGrid){
     int[] rowList =new int[N];
 
@@ -67,13 +69,11 @@ class Sudoku
             for (int col=0; col<N  ;col ++ ) {
                 rowList[col] = cGrid[col][row];
             }
-
             rowScore = rowScore + CheckDup(rowList);
-
-
         }
     return rowScore;    
     }
+// sends a all of the collums from the puzzle to check dup and returns the sum of collums 
     public int checkCol(int[][] cGrid){
     int[] colList =new int[N];
     int colScore =0;
@@ -112,12 +112,19 @@ class Sudoku
                                 Point p = new Point(i,j,poslist);
 
                                 poslist.add(poscheck);
-                                 zerolist.add(p); 
-                                }
-                        }
-                       
+                                 zerolist.add(p);
 
+                                }
+                            
+                        }
+                        if(Grid[i][j] == 0){
+                            List<Integer> posssiblePoint = zerolist.get(zerolist.size()-1).posssible;
+                            System.out.println(posssiblePoint);
+                            //Grid[i][j] = posssiblePoint.get((int)(Math.random()*posssiblePoint.size())); 
+                        }
                         Grid[i][j] = 0;
+
+                        
                         
 
                          
@@ -127,34 +134,34 @@ class Sudoku
           }
                     //System.out.println(zerolist.get(1).posssible.get(zerolist.get(1).posssible.size()-1));
 
-          
+        //intilizing vars used by the solve loop
         int ORGINALGRID[][] =Grid;
         int CURRENTGRID[][] =Grid;
         int NEWGRID[][] =Grid;
-        double threshold = 1.0;
-        double coolingrate = 0.003;
-        /// randomize 
-        
+        double threshold = 1.2;
+        double coolingrate = 0.01;
+        /// randomize the given vars absed one possible values
+        int zerocounter =0;
+        for(int i = 0; i<N;i++){
+                for(int j = 0; j<N;j++){
+                if (NEWGRID[i][j]==0) {
+                    List<Integer> posssiblePoint = zerolist.get(zerocounter).posssible;
+                    NEWGRID[i][j]= posssiblePoint.get((int)(Math.random()*posssiblePoint.size()));                   
+                    zerocounter++;
+                    }
+                }
+            }
+            //// CANT GET RANDOM RESTART TO WORK!
+        zerocounter= 0;
         while(flag==true){
+            //count for random restart
             int count = 0;
             flag =false;
-                    for (int x =0 ; x < zerolist.size()*100 ;x++ ) {
-                        int randpoint =  (int)(Math.random()*zerolist.size());
-                        NEWGRID = CURRENTGRID;
+                    for (int x =0 ; x < zerolist.size() ;x++ ) {
+                        int randpoint = (int)(Math.random()*zerolist.size());
+                         CURRENTGRID = NEWGRID ;
                         CURRENTGRID[zerolist.get(randpoint).x][zerolist.get(randpoint).y] = (int)(Math.random()*8 )+1;
-                        // for(int k = 1; k<N+1;k++){
-                        //     int lastScore = this.evaluate();
-                        //     int temp = Grid[zerolist.get(randpoint).x][zerolist.get(randpoint).y];
-                        //     Grid[zerolist.get(x)][zerolist.get(x+1)] =k;
-                        //     int nextscore = this.evaluate();
-                        //     if (lastScore >nextscore) {
-                        //           Grid[zerolist.get(x)][zerolist.get(x+1)]=temp ;
-                        //      } 
-                        //      else{
-                        //         flag =true;
-                        //      }
-
-                        // }
+                       
                                     List<Integer> posssiblePoint = zerolist.get(randpoint).posssible;
                                     for(int k = 0; k<posssiblePoint.size();k++){
                                     int lastScore = evaluate(CURRENTGRID);
@@ -163,23 +170,24 @@ class Sudoku
                                     int nextscore = evaluate(CURRENTGRID);
                                     if (lastScore <nextscore) {
                                           CURRENTGRID[zerolist.get(randpoint).x][zerolist.get(randpoint).y]=temp ;
-                                          System.out.println(evaluate(CURRENTGRID));
                                           count++;
                                           threshold = threshold - (1*coolingrate);
+                                          System.out.println("CURRENT SCORE: "+evaluate(CURRENTGRID)+" Count: "+count);
                                           if (evaluate(CURRENTGRID)==0) {
                                               Grid = CURRENTGRID;
                                               break;
                                           }
-
-                                          if (threshold >0.1) {
+                                          else if (threshold <0.1) {
                                               CURRENTGRID = NEWGRID;
+                                              threshold =1.2;
                                           }
-                                           if (count >250) {
-                                            CURRENTGRID = ORGINALGRID;
+                                           else if (count >200) {
+
+                                            CURRENTGRID = NEWGRID;
                                             count = 0;
                                           }
                                           else {
-                                              flag =true;
+                                              flag = true;
                                           }
 
                                           
